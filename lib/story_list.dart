@@ -47,7 +47,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Readbook2')),
+      appBar: AppBar(title: Text('Readbook22')),
       body: FutureBuilder<List<Story>>(
         future: futureStories,
         builder: (context, snapshot) {
