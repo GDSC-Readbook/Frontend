@@ -39,6 +39,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_tts: ^3.8.5
 
+  #임시코드
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.15.0
+  firebase_storage: ^11.5.3
+  image_picker: ^1.0.4
+  cloud_firestore: ^4.13.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,6 +72,8 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
