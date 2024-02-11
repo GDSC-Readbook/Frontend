@@ -37,7 +37,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         isPlaying = false;
       });
     });
-    flutterTts.setVolume(1.0); // Set volume to maximum
+    flutterTts.setVolume(1.0); 
   }
 
   void _togglePlay() async {
@@ -92,7 +92,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      widget.story.title,
+                      widget.story.name,
                       style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,

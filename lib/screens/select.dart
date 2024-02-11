@@ -67,12 +67,6 @@ class _SelectScreenState extends State<SelectScreen> {
         ),
         title: const Text('Readbook'),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-        ],
         iconTheme: const IconThemeData(color: Colors.black),
         titleTextStyle: const TextTheme(
           titleLarge: TextStyle(
