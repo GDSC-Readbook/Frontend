@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
 import 'package:readbook_hr/story_detail.dart';
+import 'package:readbook_hr/widgets/bottom_bar.dart';
 
 class SelectScreen extends StatefulWidget {
   const SelectScreen({super.key});
@@ -158,6 +159,7 @@ class _SelectScreenState extends State<SelectScreen> {
           ],
         ),
       ),
+      // bottomNavigationBar: Bottom(),
     );
   }
 }
