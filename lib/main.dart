@@ -4,7 +4,7 @@ import 'package:readbook_hr/screens/splash.dart';
 import 'package:readbook_hr/screens/start.dart';
 import 'package:readbook_hr/story_detail.dart';
 import 'package:readbook_hr/widgets/bottom_bar.dart';
-import 'story_list.dart';
+// import 'story_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -45,10 +45,10 @@ class MyApp extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   children: <Widget>[
                     const SelectScreen(),
-                    const StoryListScreen(),
+                    // const StoryListScreen(),
                     Container(
                       child: const Center(
-                        child: Text('save'),
+                        child: Text('save2'),
                       ),
                     ),
                   ],
@@ -64,10 +64,10 @@ class MyApp extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   const SelectScreen(),
-                  const StoryListScreen(),
+                  // const StoryListScreen(),
                   Container(
                     child: const Center(
-                      child: Text('save'),
+                      child: Text('save1'),
                     ),
                   ),
                 ],
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-      //home: StoryListScreen(),
+      // home: StoryListScreen(),
     );
   }
 }
