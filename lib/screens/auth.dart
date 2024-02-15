@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:readbook_hr/screens/select.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -22,71 +24,74 @@ class _AuthScreenState extends State<AuthScreen> {
   late bool _isLogin;
   var _enteredEmail = '';
   var _enteredPassword = '';
-  File? _selectedImage;
   var _isAuthenticating = false;
   var _enteredUsername = '';
+
+  Future<void> _submit() async {
+    final isValid = _form.currentState!.validate();
+    if (!isValid) {
+      return; // 유효성 검사 실패 시 리턴
+    }
+
+    _form.currentState!.save();
+
+    setState(() {
+      _isAuthenticating = true;
+    });
+
+    try {
+      if (_isLogin) {
+        // 로그인 로직
+        final response = await http.post(
+          Uri.parse('http://152.69.225.60/login'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'email': _enteredEmail,
+            'password': _enteredPassword,
+          }),
+        );
+
+        // 서버 응답 처리
+        if (response.statusCode == 200) {
+          // 로그인 성공 로직 처리
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (ctx) => const SelectScreen()));
+        } else {
+          // 오류 처리
+        }
+      } else {
+        // 회원가입 로직
+        final response = await http.post(
+          Uri.parse('http://152.69.225.60/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'email': _enteredEmail,
+            'password': _enteredPassword,
+            'name':
+                _enteredUsername, // User 클래스에 name 필드가 있으므로 username을 name으로 변경
+          }),
+        );
+
+        // 서버 응답 처리
+        if (response.statusCode == 200) {
+          // 회원가입 성공 로직 처리
+        } else {
+          // 오류 처리
+        }
+      }
+    } catch (error) {
+      // 네트워크 오류 처리
+    } finally {
+      setState(() {
+        _isAuthenticating = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _isLogin = widget.isLogin; // 여기에서 widget.isLogin 값을 _isLogin에 할당합니다.
-  }
-
-  void _submit() async {
-    final isValid = _form.currentState!.validate();
-    if (!isValid || !_isLogin && _selectedImage == null) {
-      return; //원하면 오류메세지 추가.
-    }
-
-    _form.currentState!.save();
-
-    try {
-      setState(() {
-        _isAuthenticating = true;
-      });
-      if (_isLogin) {
-        final userCredentials = _firebase.signInWithEmailAndPassword(
-          email: _enteredEmail,
-          password: _enteredPassword,
-        );
-      } else {
-        final userCredentials = await _firebase.createUserWithEmailAndPassword(
-          email: _enteredEmail,
-          password: _enteredPassword,
-        );
-
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_images')
-            .child('${userCredentials.user!.uid}.jpg');
-
-        await storageRef.putFile(_selectedImage!);
-        final imageUrl = await storageRef.getDownloadURL();
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredentials.user!.uid)
-            .set({
-          'username': _enteredUsername,
-          'email': _enteredEmail,
-          'image_url': imageUrl,
-        }); //어던 데이터가 문서에 저장되어야 하는지 알려준다. Map형식의 데이터를 원함.
-      }
-    } on FirebaseAuthException catch (error) {
-      //on을 통해 firebase auth 예외를 이 오류 개체에 적용할 형식으로 추가.
-      if (error.code == 'email-already-in-use') {
-        // . . .
-      }
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.message ?? 'Authentication failed'),
-        ),
-      );
-      setState(() {
-        _isAuthenticating = false;
-      });
-    }
   }
 
   @override

@@ -24,16 +24,7 @@
 //                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
 //               ),
 //             ),
-//             Tab(
-//               icon: Icon(
-//                 Icons.headphones_outlined,
-//                 size: 18,
-//               ),
-//               child: Text(
-//                 'Playing',
-//                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-//               ),
-//             ),
+
 //             Tab(
 //               icon: Icon(
 //                 Icons.book_outlined,
