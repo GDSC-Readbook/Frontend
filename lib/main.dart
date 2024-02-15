@@ -61,9 +61,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   final List<Widget> _pages = [
-    SelectScreen(),
-    PlayingScreen(),
-    MyProfileScreen(),
+    const SelectScreen(),
+    const PlayingScreen(),
+    const MyProfileScreen(),
   ];
 
   @override
@@ -78,10 +78,6 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.headphones_outlined),
-            label: 'Playing',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book_outlined),
