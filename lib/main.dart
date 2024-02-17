@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:readbook_hr/widgets/navbar.dart';
 import 'firebase_options.dart';
 import 'package:readbook_hr/screens/select.dart';
 import 'package:readbook_hr/screens/splash.dart';
-import 'package:readbook_hr/screens/playing.dart';
+// import 'package:readbook_hr/screens/playing.dart';
 import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/screens/start.dart';
 
@@ -27,19 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SplashScreen();
-          }
-          if (snapshot.hasData) {
-            return const MainScreen();
-          } else {
-            return const MainScreen(); //실제로는 startScreen으로 바꿔야함
-          }
-        },
-      ),
+      home: const SelectScreen(), // StartScreen으로 시작
     );
   }
 }
@@ -62,31 +51,25 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = [
     const SelectScreen(),
-    const PlayingScreen(),
     const MyProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_outlined),
-            label: 'Profile',
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).primaryColor,
-        onTap: _onItemTapped,
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemSelected: _onItemTapped,
       ),
     );
   }

@@ -8,8 +8,8 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        //decoration:
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 50), // 하단바가 있을 공간 만들기
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

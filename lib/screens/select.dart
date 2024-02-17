@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
 import 'package:readbook_hr/story_detail.dart';
-import 'package:readbook_hr/widgets/bottom_bar.dart';
+import 'package:readbook_hr/widgets/navbar.dart';
 
 class SelectScreen extends StatefulWidget {
   const SelectScreen({super.key});
@@ -159,7 +160,18 @@ class _SelectScreenState extends State<SelectScreen> {
           ],
         ),
       ),
-      // bottomNavigationBar: Bottom(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: 0,
+        onItemSelected: (index) {
+          if (index == 0) {
+            // 홈 탭 선택 시, 현재 화면유지
+            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const SelectScreen()));
+          } else if (index == 1) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const MyProfileScreen()));
+          }
+        },
+      ),
     );
   }
 }
