@@ -40,12 +40,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_tts: ^3.8.5
 
-  #임시코드
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.15.0
-  firebase_storage: ^11.5.3
-  image_picker: ^1.0.4
-  cloud_firestore: ^4.13.3
+
 
 dev_dependencies:
   flutter_test:
