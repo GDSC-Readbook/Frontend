@@ -1,14 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:readbook_hr/screens/select.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-final _firebase = FirebaseAuth.instance;
+import 'package:flutter/material.dart';
+
+import 'package:readbook_hr/screens/select.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
@@ -54,20 +50,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // 서버 응답 처리
         if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          // 토큰 저장
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', responseData['token']);
-
           // 로그인 성공 로직 처리
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (ctx) => const SelectScreen()));
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (ctx) => const SelectScreen()));
         } else {
-          // 오류 처리: 서버에서 반환된 오류 메시지를 표시
-          final responseData = json.decode(response.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
-          );
+          // 오류 처리
         }
       } else {
         // 회원가입 로직
@@ -84,25 +71,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // 서버 응답 처리
         if (response.statusCode == 200) {
-          // 회원가입 성공 시
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration successful! Please log in.')),
-          );
-          setState(() {
-            _isLogin = true; // 로그인 화면으로 전환
-          });
+          // 회원가입 성공 로직 처리
         } else {
-          // 회원가입 실패 시
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to register. Please try again.')),
-          );
+          // 오류 처리
         }
       }
     } catch (error) {
       // 네트워크 오류 처리
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred. Please try again later.')),
-      );
     } finally {
       setState(() {
         _isAuthenticating = false;
@@ -140,9 +115,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             decoration: const InputDecoration(
                                 labelText: 'Email Address'),
                             keyboardType: TextInputType.emailAddress,
-                            //자동보정 끄기. 이메일 주소가 자동으로 수정되는 것을 막는다.
                             autocorrect: false,
-                            //첫 글자가 대문자로 되는 것을 막는다. 최고의 코드.
                             textCapitalization: TextCapitalization.none,
                             validator: (value) {
                               if (value == null ||
@@ -240,31 +213,6 @@ class _AuthScreenState extends State<AuthScreen> {
                           //    child: const Text(
                           //        'Are you lost your password? find password'),
                           //  ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 40),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Divider(thickness: 1),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text('Or'),
-                                ),
-                                Expanded(
-                                  child: Divider(thickness: 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: Image.asset('assets/images/googlelogo.png'),
-                            iconSize: 30,
-                            onPressed: () {
-                              // 구글 로그인 로직을 여기에 추가하세요.
-                            },
-                          ),
                         ],
                       ),
                     ),
