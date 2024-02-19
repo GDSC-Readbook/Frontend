@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:readbook_hr/screens/edit_drawer.dart';
 import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
 import 'package:readbook_hr/story_detail.dart';
+import 'package:readbook_hr/widgets/drawer.dart';
 import 'package:readbook_hr/widgets/navbar.dart';
 
 class SelectScreen extends StatefulWidget {
@@ -23,6 +26,17 @@ class _SelectScreenState extends State<SelectScreen> {
     futureStories = fetchStories();
   }
 
+  void _setScreen(String identifier) async {
+    Navigator.of(context).pop();
+    if (identifier == 'profile') {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => const MyProfileScreen(),
+        ),
+      );
+    }
+  }
+
   Future<List<Story>> fetchStories() async {
     try {
       final response = await http.get(
@@ -38,13 +52,13 @@ class _SelectScreenState extends State<SelectScreen> {
           final String name = data['bookName'] ?? 'Unknown Name';
           final String title = data['bookTitle'] ?? 'Unknown Title';
           final String content = data['bookContent'] ?? '';
-          final String author = data['bookAuthor'] ?? 'Unknown Author';
+          final String image = data['bookImage'];
           stories.add(Story(
               id: id,
               name: name,
               title: title,
               content: content,
-              author: author));
+              image: image));
         }
         return stories;
       } else {
@@ -55,18 +69,12 @@ class _SelectScreenState extends State<SelectScreen> {
     }
   }
 
-  //final Future<List<BookModel>> books = getDummybooks();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
         title: const Text('Readbook'),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -84,6 +92,9 @@ class _SelectScreenState extends State<SelectScreen> {
             height: 1.0,
           ),
         ),
+      ),
+      drawer: MainDrawer(
+        onSelectScreen: _setScreen,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -176,35 +187,6 @@ class _SelectScreenState extends State<SelectScreen> {
   }
 }
 
-class BookModel {
-  final Image thumb;
-  final String title;
-  final String plot;
-
-  BookModel({required this.thumb, required this.title, required this.plot});
-}
-
-// 웹툰 더미 데이터 생성 함수
-Future<List<BookModel>> getDummybooks() async {
-  // 비동기 작업을 모방하기 위한 딜레이
-  await Future.delayed(const Duration(seconds: 1));
-
-  // 더미 데이터 리스트 생성
-  return List.generate(
-    10, // 더미 데이터의 수
-    (index) => BookModel(
-        thumb: Image.asset(
-          'assets/images/my_background.png',
-          height: 251,
-          width: 182,
-        ), // 더미 이미지 URL
-        title: 'book name yeahhhhh $index',
-        plot:
-            'long plottttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt $index' // 더미 타이틀
-        ),
-  );
-}
-
 ListView makeList(AsyncSnapshot<List<Story>> snapshot) {
   return ListView.separated(
     shrinkWrap: true, // if you want to constrain the height of the ListView
@@ -232,22 +214,26 @@ ListView makeList(AsyncSnapshot<List<Story>> snapshot) {
         child: Column(
           children: [
             Container(
-              width: 182,
-              height: 251,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.green,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 15,
-                    offset: const Offset(10, 10),
-                    color: Colors.black.withOpacity(0.5),
-                  )
-                ],
-              ),
-              //child: book.thumb,
-            ),
+                width: 182,
+                height: 251,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.green,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 15,
+                      offset: const Offset(10, 10),
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+                child: Image.network(
+                  story.image,
+                  errorBuilder: (context, url, error) =>
+                      const Icon(Icons.error),
+                ) // 이 부분에서 백엔드에서 제공하는 .png 이미지를 표시
+                ),
             const SizedBox(
               height: 10,
             ),
