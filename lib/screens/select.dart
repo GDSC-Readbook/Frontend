@@ -7,6 +7,7 @@ import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
 import 'package:readbook_hr/story_detail.dart';
+import 'package:readbook_hr/widgets/drawer.dart';
 
 import 'package:readbook_hr/widgets/navbar.dart';
 
@@ -28,10 +29,10 @@ class _SelectScreenState extends State<SelectScreen> {
 
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
-    if (identifier == 'profile') {
+    if (identifier == 'add') {
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (ctx) => const MyProfileScreen(),
+          builder: (ctx) => const AddStoryScreen(),
         ),
       );
     }
@@ -93,6 +94,7 @@ class _SelectScreenState extends State<SelectScreen> {
           ),
         ),
       ),
+      drawer: MainDrawer(onSelectScreen: _setScreen),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
