@@ -24,10 +24,17 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isAuthenticating = false;
   var _enteredUsername = '';
 
+  @override
+  void initState() {
+    super.initState();
+    _isLogin = widget.isLogin;
+  }
+
   Future<void> _submit() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
-      return; // 유효성 검사 실패 시 리턴
+      print('Form is not valid');
+      return;
     }
 
     _form.currentState!.save();
@@ -38,7 +45,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       if (_isLogin) {
-        // 로그인 로직
+        print('Attempting to log in');
         final response = await http.post(
           Uri.parse('http://152.69.225.60/login'),
           headers: {'Content-Type': 'application/json'},
@@ -48,47 +55,44 @@ class _AuthScreenState extends State<AuthScreen> {
           }),
         );
 
-        // 서버 응답 처리
+        print('Login response status: ${response.statusCode}');
         if (response.statusCode == 200) {
-          // 로그인 성공 로직 처리
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (ctx) => const SelectScreen()));
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const SelectScreen()));
         } else {
-          // 오류 처리
+          // 로그인 실패 시 알림 표시
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed: ${response.statusCode}')),
+          );
         }
       } else {
-        // 회원가입 로직
+        print('Attempting to register');
         final response = await http.post(
           Uri.parse('http://152.69.225.60/register'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'email': _enteredEmail,
             'password': _enteredPassword,
-            'name':
-                _enteredUsername, // User 클래스에 name 필드가 있으므로 username을 name으로 변경
+            'name': _enteredUsername,
           }),
         );
 
-        // 서버 응답 처리
         if (response.statusCode == 200) {
-          // 회원가입 성공 로직 처리
+          print('Registration successful');
+          setState(() {
+            _isLogin = true;
+          });
         } else {
-          // 오류 처리
+          print('Registration failed with status code: ${response.statusCode}');
         }
       }
     } catch (error) {
-      // 네트워크 오류 처리
+      print('An error occurred: $error');
     } finally {
       setState(() {
         _isAuthenticating = false;
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _isLogin = widget.isLogin; // 여기에서 widget.isLogin 값을 _isLogin에 할당합니다.
   }
 
   @override
