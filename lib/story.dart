@@ -2,7 +2,7 @@ class Story {
   final int id;
   final String title;
   final String content;
-  final String author;
+  final String image;
   final String name;
 
   Story({
@@ -10,6 +10,6 @@ class Story {
     required this.name,
     required this.title,
     required this.content,
-    required this.author,
+    required this.image,
   });
 }
