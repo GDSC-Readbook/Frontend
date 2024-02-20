@@ -220,6 +220,9 @@ class _SelectScreenState extends State<SelectScreen> {
             // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const SelectScreen()));
           } else if (index == 1) {
             Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const AddStoryScreen()));
+          } else {
+            Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const MyProfileScreen()));
           }
         },
