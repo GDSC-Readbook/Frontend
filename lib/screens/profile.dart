@@ -43,7 +43,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // print(data); 
+        // print(data);
         setState(() {
           _nameController.text = data['name'];
           _emailController.text = data['email'];
@@ -59,8 +59,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   // 수정 후 저장
   Future<void> _saveProfile() async {
-  
-    String apiUrl = 'https://152.69.225.60/updatemyinfo'; 
+    String apiUrl = 'https://152.69.225.60/updatemyinfo';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
@@ -241,8 +240,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: () {},
-              child: Text('logout', style: TextStyle(fontSize: 16)),
+              onPressed: _logout, // 로그아웃 기능 연결
+              child: Text('logout', style: TextStyle(fontSize: 20)),
               style: TextButton.styleFrom(
                 primary: Colors.red,
                 minimumSize: const Size(double.infinity, 50),
