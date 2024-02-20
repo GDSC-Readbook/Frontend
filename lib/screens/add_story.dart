@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 //import 'package:image_picker/image_picker.dart';
 
+import 'package:readbook_hr/screens/select.dart';
+
 class AddStoryScreen extends StatefulWidget {
   const AddStoryScreen({super.key});
 
@@ -39,7 +41,14 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         body: jsonEncode(storyData),
       );
       if (response.statusCode == 200) {
-      } else {}
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => const SelectScreen(),
+          ),
+        );
+      } else {
+        print('failed');
+      }
     }
   }
 
