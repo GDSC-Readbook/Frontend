@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/add_story.dart';
+import 'package:readbook_hr/screens/add_story2.dart';
 import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
@@ -20,11 +21,13 @@ class SelectScreen extends StatefulWidget {
 
 class _SelectScreenState extends State<SelectScreen> {
   late Future<List<Story>> futureStories;
+  late Future<List<Story>> futureStories2;
 
   @override
   void initState() {
     super.initState();
     futureStories = fetchStories();
+    futureStories2 = fetchMakeStories();
   }
 
   void _setScreen(String identifier) async {
@@ -32,7 +35,7 @@ class _SelectScreenState extends State<SelectScreen> {
     if (identifier == 'add') {
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (ctx) => const AddStoryScreen(),
+          builder: (ctx) => const AddStoryScreen2(),
         ),
       );
     }
@@ -62,6 +65,38 @@ class _SelectScreenState extends State<SelectScreen> {
               image: image));
         }
         return stories;
+      } else {
+        throw Exception('Failed to load stories');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch stories: $e');
+    }
+  }
+
+  Future<List<Story>> fetchMakeStories() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://152.69.225.60/book2/findAll'),
+        headers: {'Accept-Charset': 'utf-8'},
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            jsonDecode(utf8.decode(response.bodyBytes));
+        final List<Story> selfStories = [];
+        for (var data in responseData) {
+          final int id2 = data['id'];
+          final String name2 = data['bookName'] ?? 'Unknown Name';
+          final String title2 = data['bookTitle'] ?? 'Unknown Title';
+          final String content2 = data['bookContent'] ?? '';
+          final String image2 = data['bookImage'];
+          selfStories.add(Story(
+              id: id2,
+              name: name2,
+              title: title2,
+              content: content2,
+              image: image2));
+        }
+        return selfStories;
       } else {
         throw Exception('Failed to load stories');
       }
@@ -114,17 +149,16 @@ class _SelectScreenState extends State<SelectScreen> {
                     fontSize: 13, color: Color.fromRGBO(131, 133, 137, 1)),
               ),
             ),
-            FutureBuilder<List<Story>>(
+            FutureBuilder(
               future: futureStories,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  const int halfLength = 7; // 데이터의 반을 계산
                   return Column(
                     children: [
                       const SizedBox(height: 10),
                       SizedBox(
-                        height: 300, // ListView의 고정 높이
-                        child: makeList(snapshot, 0, halfLength),
+                        height: 300, // Set a fixed height for the ListView
+                        child: makeList(snapshot, true),
                       ),
                     ],
                   );
@@ -149,60 +183,19 @@ class _SelectScreenState extends State<SelectScreen> {
                     fontSize: 13, color: Color.fromRGBO(131, 133, 137, 1)),
               ),
             ),
-            FutureBuilder<List<Story>>(
-              future: futureStories,
+            FutureBuilder(
+              future: futureStories2,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  const int halfLength = 7;
-                  return halfLength == 7
-                      ? Column(
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                Container(
-                                    padding: const EdgeInsets.only(top: 105),
-                                    width: 182,
-                                    height: 225,
-                                    clipBehavior: Clip.hardEdge,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.green,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          blurRadius: 15,
-                                          offset: const Offset(10, 10),
-                                          color: Colors.black.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Text(
-                                      'No Stories Yet',
-                                      textAlign: TextAlign.center,
-                                    )),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 50,
-                            )
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            const SizedBox(height: 10),
-                            SizedBox(
-                              height: 350, // ListView의 고정 높이
-                              child: makeList(
-                                  snapshot, halfLength, snapshot.data!.length),
-                            ),
-                          ],
-                        );
+                  return Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 300, // Set a fixed height for the ListView
+                        child: makeList(snapshot, false),
+                      ),
+                    ],
+                  );
                 }
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -228,20 +221,19 @@ class _SelectScreenState extends State<SelectScreen> {
   }
 }
 
-ListView makeList(AsyncSnapshot<List<Story>> snapshot, int start, int end) {
-  final int correctedEnd = min(end, snapshot.data!.length);
+ListView makeList(AsyncSnapshot<List<Story>> snapshot, bool maked) {
   return ListView.separated(
     shrinkWrap: true, // if you want to constrain the height of the ListView
     physics:
         const ClampingScrollPhysics(), // to prevent scrolling if wrapped in a SingleChildScrollView
     scrollDirection: Axis.horizontal,
-    itemCount: correctedEnd - start,
+    itemCount: snapshot.data!.length,
     padding: const EdgeInsets.symmetric(
       vertical: 10,
       horizontal: 20,
     ),
     itemBuilder: (context, index) {
-      var story = snapshot.data![start + index];
+      var story = snapshot.data![index];
       return InkWell(
         onTap: () {
           Navigator.push(
@@ -256,26 +248,31 @@ ListView makeList(AsyncSnapshot<List<Story>> snapshot, int start, int end) {
         child: Column(
           children: [
             Container(
-                width: 182,
-                height: 225,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.green,
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 15,
-                      offset: const Offset(10, 10),
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-                child: Image.network(
-                  'http://152.69.225.60/book/image/${story.image}',
-                  errorBuilder: (context, url, error) =>
-                      const Icon(Icons.error),
-                ) // 이 부분에서 백엔드에서 제공하는 .png 이미지를 표시
-                ),
+              width: 182,
+              height: 225,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.green,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 15,
+                    offset: const Offset(10, 10),
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                ],
+              ),
+              child: maked
+                  ? Image.network(
+                      fit: BoxFit.cover,
+                      'http://152.69.225.60/book/image/${story.image}',
+                      errorBuilder: (context, url, error) =>
+                          const Icon(Icons.error),
+                    )
+                  : Image.network(
+                      fit: BoxFit.cover,
+                      'http://152.69.225.60/book2/image/${story.image}'),
+            ),
             const SizedBox(
               height: 10,
             ),
