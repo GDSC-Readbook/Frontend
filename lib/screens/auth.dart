@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:readbook_hr/screens/password.dart';
 import 'package:readbook_hr/screens/select.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -172,7 +173,11 @@ class _AuthScreenState extends State<AuthScreen> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    // RecoveryScreen으로 넘어가는 로직을 여기에 추가하세요.
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              PasswordRecoveryScreen()),
+                                    );
                                   },
                                   child: const Text('Recovery Password'),
                                 ),

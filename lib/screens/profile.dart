@@ -28,7 +28,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   // 정보 가져오기
   Future<void> _fetchUserData() async {
-    const String apiUrl = 'https://152.69.225.60/myinfo'; // HTTPS 사용
+    const String apiUrl = 'https://152.69.225.60/myinfo';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
@@ -45,8 +45,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         final data = json.decode(response.body);
         // print(data);
         setState(() {
-          _nameController.text = data['name'];
-          _emailController.text = data['email'];
+          if (data.containsKey('name')) {
+            _nameController.text = data['name'];
+          }
+          if (data.containsKey('email')) {
+            _emailController.text = data['email'];
+          }
         });
       } else {
         throw Exception('Failed to load user data');
@@ -59,11 +63,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   // 수정 후 저장
   Future<void> _saveProfile() async {
+    if (_newPasswordController.text != _confirmNewPasswordController.text) {
+      _showErrorDialog('The new passwords do not match.');
+      return;
+    }
+
     String apiUrl = 'https://152.69.225.60/updatemyinfo';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
     Map<String, String> requestBody = {
+      'email': _emailController.text,
       'name': _nameController.text,
       'password': _newPasswordController.text,
     };
@@ -178,22 +188,22 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text('email',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _emailController,
-              readOnly: true, // 읽기전용으로 , 수정불가
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                fillColor: Color.fromARGB(255, 206, 206, 206),
-                filled: true,
-              ),
-            ),
-            const SizedBox(height: 20),
+            // Text('email',
+            //     style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+            // const SizedBox(height: 8),
+            // TextField(
+            //   controller: _emailController,
+            //   readOnly: true, // 읽기전용으로 , 수정불가
+            //   decoration: InputDecoration(
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(8.0),
+            //       borderSide: BorderSide.none,
+            //     ),
+            //     fillColor: Color.fromARGB(255, 206, 206, 206),
+            //     filled: true,
+            //   ),
+            // ),
+            // const SizedBox(height: 20),
             Text('new password',
                 style: TextStyle(color: Colors.grey[600], fontSize: 16)),
             const SizedBox(height: 8),

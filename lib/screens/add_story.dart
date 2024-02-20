@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+//import 'package:image_picker/image_picker.dart';
 
 import 'package:readbook_hr/screens/select.dart';
 
@@ -23,24 +25,20 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      //final storyData = {
-      //  'book': {
-      //    'bookName': _bookName,
-      //    'bookTitle': _bookTitle,
-      //    'bookAuthor': _bookAuthor,
-      //    'bookContent': _bookContent,
-      //  },
-      //};
+      final Map<String, dynamic> storyData = {
+        'book': {
+          'bookName': _bookName,
+          'bookTitle': _bookTitle,
+          'bookAuthor': _bookAuthor,
+          'bookImage': '',
+          'bookContent': _bookContent,
+        },
+      };
 
       final response = await http.post(
         Uri.parse('http://152.69.225.60/book2/save'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'bookName': _bookName,
-          'bookTitle': _bookTitle,
-          'bookAuthor': _bookAuthor,
-          'bookContent': _bookContent,
-        }),
+        body: jsonEncode(storyData),
       );
       if (response.statusCode == 200) {
         Navigator.of(context).push(
@@ -59,6 +57,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Story'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -94,7 +96,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text('Make Your Story'),
+                  child: const Text('Add Story'),
                 ),
               ],
             ),
