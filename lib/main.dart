@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const SelectScreen(), // StartScreen으로 시작
+      home: const StartScreen(), // StartScreen으로 시작
     );
   }
 }
