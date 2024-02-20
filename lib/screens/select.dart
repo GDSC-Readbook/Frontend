@@ -209,8 +209,7 @@ class _SelectScreenState extends State<SelectScreen> {
         selectedIndex: 0,
         onItemSelected: (index) {
           if (index == 0) {
-            // 홈 탭 선택 시, 현재 화면유지
-            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const SelectScreen()));
+            
           } else if (index == 1) {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const AddStoryScreen()));
@@ -226,9 +225,9 @@ class _SelectScreenState extends State<SelectScreen> {
 
 ListView makeList(AsyncSnapshot<List<Story>> snapshot, bool maked) {
   return ListView.separated(
-    shrinkWrap: true, // if you want to constrain the height of the ListView
+    shrinkWrap: true, 
     physics:
-        const ClampingScrollPhysics(), // to prevent scrolling if wrapped in a SingleChildScrollView
+        const ClampingScrollPhysics(), 
     scrollDirection: Axis.horizontal,
     itemCount: snapshot.data!.length,
     padding: const EdgeInsets.symmetric(

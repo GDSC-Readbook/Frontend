@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
 import 'story.dart';
 
 class StoryDetailScreen extends StatefulWidget {
@@ -37,13 +36,15 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         isPlaying = false;
       });
     });
-    flutterTts.setVolume(1.0); 
+    flutterTts.setVolume(1.0);
+    flutterTts.setLanguage("en");
   }
 
   void _togglePlay() async {
     if (isPlaying) {
       await flutterTts.stop();
     } else {
+      await flutterTts.setLanguage('en'); 
       await flutterTts.speak(widget.story.content);
     }
     setState(() {
