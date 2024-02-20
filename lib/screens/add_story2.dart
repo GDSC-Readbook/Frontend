@@ -44,7 +44,7 @@ class _AddStoryScreenState2 extends State<AddStoryScreen2> {
 
       final response = await http.post(
         Uri.parse('http://152.69.225.60/book/save'),
-        headers: {'Content-Type': 'multipart/form-data'},
+        headers: {'Content-Type': 'multipart/form-data; boundary='},
         body: jsonEncode({
           'book': {
             'bookName': _bookName,

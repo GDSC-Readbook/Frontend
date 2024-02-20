@@ -35,7 +35,7 @@ class _SelectScreenState extends State<SelectScreen> {
     if (identifier == 'add') {
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (ctx) => const AddStoryScreen2(),
+          builder: (ctx) => const AddStoryScreen(),
         ),
       );
     }

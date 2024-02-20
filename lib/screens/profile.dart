@@ -1,5 +1,4 @@
 import 'dart:convert';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/auth.dart';
 import 'package:readbook_hr/screens/select.dart';
@@ -19,6 +18,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmNewPasswordController =
       TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   // 정보 가져오기
   Future<void> _fetchUserData() async {
-    const String apiUrl = 'http://152.69.225.60/myinfo';
+    const String apiUrl = 'https://152.69.225.60/myinfo'; // HTTPS 사용
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
@@ -43,6 +43,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        // print(data);
         setState(() {
           _nameController.text = data['name'];
           _emailController.text = data['email'];
@@ -52,18 +53,18 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       }
     } catch (e) {
       print(e);
+      _showErrorDialog('Failed to fetch user data.');
     }
   }
 
   // 수정 후 저장
   Future<void> _saveProfile() async {
-    String apiUrl = 'http://152.69.225.60/updatemyinfo';
+    String apiUrl = 'https://152.69.225.60/updatemyinfo';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
     Map<String, String> requestBody = {
       'name': _nameController.text,
-      'email': _emailController.text,
       'password': _newPasswordController.text,
     };
 
@@ -72,7 +73,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         Uri.parse(apiUrl),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $token", // 토큰 사용
+          "Authorization": "Bearer $token",
         },
         body: json.encode(requestBody),
       );
@@ -80,15 +81,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       if (response.statusCode == 200) {
         _showSuccessDialog(); // 성공 모달 표시
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update profile')),
-        );
+        _showErrorDialog(
+            'Failed to update profile. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error occurred: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error occurred while updating profile')),
-      );
+      _showErrorDialog('Error occurred while updating profile.');
     }
   }
 
@@ -102,8 +100,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           TextButton(
             child: const Text('OK'),
             onPressed: () {
-              Navigator.of(ctx).pop(); // 모달 닫기
-              _logout(); // 로그아웃 함수 호출
+              Navigator.of(ctx).pop();
+              _logout();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
             },
           ),
         ],
@@ -112,11 +128,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   void _logout() async {
-    // SharedPreferences에서 토큰 제거
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
 
-    // 로그인 화면으로 이동
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -139,7 +153,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // SelectScreen으로 이동
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (_) => const SelectScreen()),
             );
@@ -227,8 +240,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: () {},
-              child: Text('logout', style: TextStyle(fontSize: 16)),
+              onPressed: _logout, // 로그아웃 기능 연결
+              child: Text('logout', style: TextStyle(fontSize: 20)),
               style: TextButton.styleFrom(
                 primary: Colors.red,
                 minimumSize: const Size(double.infinity, 50),

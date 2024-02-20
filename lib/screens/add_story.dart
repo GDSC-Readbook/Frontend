@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:readbook_hr/screens/select.dart';
+
 class AddStoryScreen extends StatefulWidget {
   const AddStoryScreen({super.key});
 
@@ -41,7 +43,14 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         }),
       );
       if (response.statusCode == 200) {
-      } else {}
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => const SelectScreen(),
+          ),
+        );
+      } else {
+        print('failed');
+      }
     }
   }
 
