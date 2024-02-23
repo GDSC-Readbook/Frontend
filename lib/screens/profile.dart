@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:readbook_hr/screens/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProfileScreen extends StatefulWidget {
@@ -16,49 +17,44 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController _confirmNewPasswordController =
       TextEditingController();
 
-  String? _email; // Nullable이 아닌 필드로 변경
-
   @override
-  void initState() {
-    super.initState();
-    _fetchUserData();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Profile'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _newPasswordController,
+              decoration: InputDecoration(labelText: 'New Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _confirmNewPasswordController,
+              decoration: InputDecoration(labelText: 'Confirm New Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _saveProfile,
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  // 정보 가져오기
-  Future<void> _fetchUserData() async {
-    const String apiUrl = 'https://152.69.225.60/myinfo';
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
-
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data.containsKey('email') && data['email'] is String) {
-          _email = data['email'];
-        } else {
-          _email = ''; // 기본값 설정
-        }
-        setState(() {
-          _nameController.text = data['name'] ?? '';
-        });
-      } else {
-        throw Exception('Failed to load user data');
-      }
-    } catch (e) {
-      print(e);
-      _showErrorDialog('Failed to fetch user data.');
-    }
-  }
-
-  // 수정 후 저장
   Future<void> _saveProfile() async {
     if (_newPasswordController.text.isNotEmpty &&
         _newPasswordController.text != _confirmNewPasswordController.text) {
@@ -66,19 +62,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       return;
     }
 
-    String apiUrl = 'https://152.69.225.60/updatemyinfo';
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
 
-    Map<String, String> requestBody = {
-      'email': _email ?? '', // Null일 경우 빈 문자열 전달
+    final requestBody = {
       'name': _nameController.text,
       'password': _newPasswordController.text,
     };
 
     try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
+      final response = await http.post(
+        Uri.parse('https://152.69.225.60/updatemyinfo'),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
@@ -87,7 +81,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       );
 
       if (response.statusCode == 200) {
-        _showSuccessDialog(); // 성공 모달 표시
+        _showSuccessDialog();
+        Navigator.of(context).pushReplacement(
+          // 로그인 화면으로 이동
+          MaterialPageRoute(builder: (context) => AuthScreen(isLogin: true)),
+        );
       } else {
         _showErrorDialog(
             'Failed to update profile. Status code: ${response.statusCode}');
@@ -130,55 +128,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             },
           ),
         ],
-      ),
-    );
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'My Profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              readOnly: true,
-              initialValue: _email ?? '', // Nullable 아닌 필드이므로 null 체크 없이 사용 가능
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _newPasswordController,
-              decoration: InputDecoration(labelText: 'New Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _confirmNewPasswordController,
-              decoration: InputDecoration(labelText: 'Confirm New Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveProfile, // 프로필 저장 기능 연결
-              child: Text('Save'),
-            ),
-          ],
-        ),
       ),
     );
   }
