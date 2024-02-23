@@ -2,9 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:readbook_hr/screens/add_story.dart';
 import 'package:readbook_hr/screens/password.dart';
+import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/screens/select.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:readbook_hr/widgets/bottom.dart';
+
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
@@ -57,6 +62,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         print('Login response status: ${response.statusCode}');
         if (response.statusCode == 200) {
+
           final responseData = json.decode(response.body);
           final token = responseData['token'];
           final prefs = await SharedPreferences.getInstance();
@@ -109,7 +115,19 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Text(
+                'Readbook',
+                style: TextStyle(
+                  fontSize: 43,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(52, 168, 83, 1),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
               Card(
+                color: const Color.fromARGB(176, 216, 253, 174),
                 margin: const EdgeInsets.all(20),
                 child: SingleChildScrollView(
                   child: Padding(
@@ -169,7 +187,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredPassword = value!;
                             },
                           ),
-
                           if (_isLogin)
                             const SizedBox(
                               height: 20,
@@ -199,14 +216,15 @@ class _AuthScreenState extends State<AuthScreen> {
                             ElevatedButton(
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
+                                  backgroundColor:
+                                      const Color.fromRGBO(52, 168, 83, 1),
                                   fixedSize: const Size(325, 50)),
                               child: Text(
                                 _isLogin ? 'Sign In' : 'Create Account',
                                 style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
                               ),
                             ),
                           if (!_isAuthenticating)
@@ -216,16 +234,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _isLogin = !_isLogin;
                                 });
                               },
-                              child: Text(_isLogin
-                                  ? 'Not A Member? Register Now'
-                                  : 'Already have an account? Sign In'),
+                              child: Text(
+                                _isLogin
+                                    ? 'Not A Member? Register Now'
+                                    : 'Already have an account? Sign In',
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 104, 104, 104)),
+                              ),
                             ),
-                          //if (!_isAuthenticating && _isLogin)
-                          //  TextButton(
-                          //    onPressed: () {},
-                          //    child: const Text(
-                          //        'Are you lost your password? find password'),
-                          //  ),
                         ],
                       ),
                     ),
