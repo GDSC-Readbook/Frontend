@@ -144,7 +144,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => AuthScreen(
+          builder: (context) => const AuthScreen(
                 isLogin: true,
               )),
     );
@@ -154,20 +154,21 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: const Text(
           'My Profile',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const SelectScreen()),
-            );
-          },
-        ),
+        //leading: IconButton(
+        //  icon: const Icon(Icons.arrow_back, color: Colors.black),
+        //  onPressed: () {
+        //    Navigator.of(context).pushReplacement(
+        //      MaterialPageRoute(builder: (_) => const SelectScreen()),
+        //    );
+        //  },
+        //),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
@@ -175,7 +176,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           children: [
             Text('name',
                 style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -237,25 +238,25 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             ),
             const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: _saveProfile, // 프로필 저장 기능 연결
-              child: Text('저장', style: TextStyle(fontSize: 16)),
+              onPressed: _saveProfile,
               style: ElevatedButton.styleFrom(
-                primary: Colors.green,
-                onPrimary: Colors.white,
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-              ),
+              ), // 프로필 저장 기능 연결
+              child: const Text('저장', style: TextStyle(fontSize: 16)),
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: _logout, // 로그아웃 기능 연결
-              child: Text('logout', style: TextStyle(fontSize: 20)),
+              onPressed: _logout,
               style: TextButton.styleFrom(
-                primary: Colors.red,
+                foregroundColor: Colors.red,
                 minimumSize: const Size(double.infinity, 50),
-              ),
+              ), // 로그아웃 기능 연결
+              child: const Text('logout', style: TextStyle(fontSize: 20)),
             ),
           ],
         ),

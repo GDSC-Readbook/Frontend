@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:readbook_hr/screens/profile.dart';
 import 'dart:convert';
 import 'dart:io';
 //import 'package:image_picker/image_picker.dart';
 
 import 'package:readbook_hr/screens/select.dart';
+import 'package:readbook_hr/widgets/bottom.dart';
 
 class AddStoryScreen extends StatefulWidget {
   const AddStoryScreen({super.key});
@@ -41,11 +43,22 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         body: jsonEncode(storyData),
       );
       if (response.statusCode == 200) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (ctx) => const SelectScreen(),
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (ctx) => const DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  SelectScreen(),
+                  AddStoryScreen(),
+                  MyProfileScreen()
+                ],
+              ),
+              bottomNavigationBar: Bottom(),
+            ),
           ),
-        );
+        ));
       } else {
         print('failed');
       }
@@ -56,11 +69,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Add Story'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
