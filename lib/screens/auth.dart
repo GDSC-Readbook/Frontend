@@ -43,7 +43,8 @@ class _AuthScreenState extends State<AuthScreen> {
       _isAuthenticating = true;
     });
 
-    try { /// 로그인 
+    try {
+      /// 로그인
       if (_isLogin) {
         print('Attempting to log in');
         final response = await http.post(

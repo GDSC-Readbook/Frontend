@@ -1,9 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/auth.dart';
 
-import 'package:flutter/material.dart';
-
 class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
+  const StartScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,8 @@ class StartScreen extends StatelessWidget {
                 child: const Text(
                   'Get Started',
                   style: TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.w700,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                     color: Color.fromARGB(255, 255, 255, 255), // 폰트 크기
                   ),
                 ),
@@ -68,3 +68,4 @@ class StartScreen extends StatelessWidget {
     );
   }
 }
+
