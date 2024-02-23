@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:readbook_hr/screens/auth.dart';
-import 'package:readbook_hr/screens/select.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,11 +12,11 @@ class MyProfileScreen extends StatefulWidget {
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmNewPasswordController =
       TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String? _email; // Nullable이 아닌 필드로 변경
 
   @override
   void initState() {
@@ -43,14 +41,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // print(data);
+        if (data.containsKey('email') && data['email'] is String) {
+          _email = data['email'];
+        } else {
+          _email = ''; // 기본값 설정
+        }
         setState(() {
-          if (data.containsKey('name')) {
-            _nameController.text = data['name'];
-          }
-          if (data.containsKey('email')) {
-            _emailController.text = data['email'];
-          }
+          _nameController.text = data['name'] ?? '';
         });
       } else {
         throw Exception('Failed to load user data');
@@ -63,7 +60,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   // 수정 후 저장
   Future<void> _saveProfile() async {
-    if (_newPasswordController.text != _confirmNewPasswordController.text) {
+    if (_newPasswordController.text.isNotEmpty &&
+        _newPasswordController.text != _confirmNewPasswordController.text) {
       _showErrorDialog('The new passwords do not match.');
       return;
     }
@@ -73,7 +71,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     final token = prefs.getString('token') ?? '';
 
     Map<String, String> requestBody = {
-      'email': _emailController.text,
+      'email': _email ?? '', // Null일 경우 빈 문자열 전달
       'name': _nameController.text,
       'password': _newPasswordController.text,
     };
@@ -111,7 +109,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             child: const Text('OK'),
             onPressed: () {
               Navigator.of(ctx).pop();
-              _logout();
             },
           ),
         ],
@@ -137,19 +134,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     );
   }
 
-  void _logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-          builder: (context) => AuthScreen(
-                isLogin: true,
-              )),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,107 +144,41 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const SelectScreen()),
-            );
-          },
-        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            Text('name',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            SizedBox(height: 8),
-            TextField(
+            TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
+              decoration: InputDecoration(labelText: 'Name'),
             ),
             const SizedBox(height: 20),
-            // Text('email',
-            //     style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            // const SizedBox(height: 8),
-            // TextField(
-            //   controller: _emailController,
-            //   readOnly: true, // 읽기전용으로 , 수정불가
-            //   decoration: InputDecoration(
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8.0),
-            //       borderSide: BorderSide.none,
-            //     ),
-            //     fillColor: Color.fromARGB(255, 206, 206, 206),
-            //     filled: true,
-            //   ),
-            // ),
-            // const SizedBox(height: 20),
-            Text('new password',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            const SizedBox(height: 8),
-            TextField(
+            TextFormField(
+              readOnly: true,
+              initialValue: _email ?? '', // Nullable 아닌 필드이므로 null 체크 없이 사용 가능
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
               controller: _newPasswordController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
+              decoration: InputDecoration(labelText: 'New Password'),
               obscureText: true,
             ),
             const SizedBox(height: 20),
-            Text('confirm new password',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-            const SizedBox(height: 8),
-            TextField(
+            TextFormField(
               controller: _confirmNewPasswordController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
-                ),
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
+              decoration: InputDecoration(labelText: 'Confirm New Password'),
               obscureText: true,
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveProfile, // 프로필 저장 기능 연결
-              child: Text('저장', style: TextStyle(fontSize: 16)),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.green,
-                onPrimary: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: _logout, // 로그아웃 기능 연결
-              child: Text('logout', style: TextStyle(fontSize: 20)),
-              style: TextButton.styleFrom(
-                primary: Colors.red,
-                minimumSize: const Size(double.infinity, 50),
-              ),
+              child: Text('Save'),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const ButtonBar(),
     );
   }
 }

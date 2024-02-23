@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/password.dart';
 import 'package:readbook_hr/screens/select.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
@@ -42,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _isAuthenticating = true;
     });
 
-    try {
+    try { /// 로그인 
       if (_isLogin) {
         print('Attempting to log in');
         final response = await http.post(
@@ -56,8 +57,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
         print('Login response status: ${response.statusCode}');
         if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          final token = responseData['token'];
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('token', token);
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (ctx) => const SelectScreen()));
+            MaterialPageRoute(builder: (ctx) => const SelectScreen()),
+          );
         } else {
           // 로그인 실패 시 알림 표시
           ScaffoldMessenger.of(context).showSnackBar(
