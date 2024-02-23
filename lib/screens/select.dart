@@ -1,16 +1,9 @@
 import 'dart:convert';
-
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/add_story.dart';
-import 'package:readbook_hr/screens/add_story2.dart';
-import 'package:readbook_hr/screens/profile.dart';
 import 'package:readbook_hr/story.dart';
 import 'package:http/http.dart' as http;
 import 'package:readbook_hr/story_detail.dart';
-import 'package:readbook_hr/widgets/drawer.dart';
-
-import 'package:readbook_hr/widgets/navbar.dart';
 
 class SelectScreen extends StatefulWidget {
   const SelectScreen({super.key});
@@ -110,6 +103,7 @@ class _SelectScreenState extends State<SelectScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: const Text('Readbook'),
         centerTitle: true,
@@ -129,7 +123,6 @@ class _SelectScreenState extends State<SelectScreen> {
           ),
         ),
       ),
-      drawer: MainDrawer(onSelectScreen: _setScreen),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,29 +198,15 @@ class _SelectScreenState extends State<SelectScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: 0,
-        onItemSelected: (index) {
-          if (index == 0) {
-            
-          } else if (index == 1) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const AddStoryScreen()));
-          } else {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const MyProfileScreen()));
-          }
-        },
-      ),
     );
   }
 }
 
 ListView makeList(AsyncSnapshot<List<Story>> snapshot, bool maked) {
   return ListView.separated(
-    shrinkWrap: true, 
+    shrinkWrap: true, // if you want to constrain the height of the ListView
     physics:
-        const ClampingScrollPhysics(), 
+        const ClampingScrollPhysics(), // to prevent scrolling if wrapped in a SingleChildScrollView
     scrollDirection: Axis.horizontal,
     itemCount: snapshot.data!.length,
     padding: const EdgeInsets.symmetric(
