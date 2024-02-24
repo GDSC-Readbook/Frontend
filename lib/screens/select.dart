@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:readbook_hr/screens/add_story.dart';
 // import 'package:readbook_hr/screens/add_story2.dart';
@@ -204,6 +202,25 @@ class _SelectScreenState extends State<SelectScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: 0,
+        onItemSelected: (index) {
+          setState(() {
+            // Ensure to call setState to refresh the UI
+            if (index == 0) {
+              // Do nothing as we're already on the home screen
+            } else if (index == 1) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const AddStoryScreen(),
+              ));
+            } else if (index == 2) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const MyProfileScreen(),
+              ));
+            }
+          });
+        },
       ),
     );
   }
