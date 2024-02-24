@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:readbook_hr/screens/select.dart';
 import 'package:readbook_hr/widgets/bottom.dart';
+import 'package:readbook_hr/widgets/navbar.dart';
 
 class AddStoryScreen extends StatefulWidget {
   const AddStoryScreen({super.key});
@@ -55,7 +56,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   MyProfileScreen()
                 ],
               ),
-              bottomNavigationBar: Bottom(),
+              // bottomNavigationBar: CustomBottomNavigationBar(),
             ),
           ),
         ));
@@ -112,6 +113,22 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: 1, // Assuming index 1 is for AddStoryScreen
+        onItemSelected: (index) {
+          if (index == 0) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const SelectScreen()),
+            );
+          } else if (index == 1) {
+            // Current screen, no action needed.
+          } else if (index == 2) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const MyProfileScreen()),
+            );
+          }
+        },
       ),
     );
   }
