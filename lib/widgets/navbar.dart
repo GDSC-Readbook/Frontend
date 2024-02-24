@@ -26,8 +26,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons
-              .create), // Icon for story writing, can be changed according to design preferences
-          label: 'Write', // Label for the story creation tab
+              .create), 
+          label: 'Write',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.book_outlined),
